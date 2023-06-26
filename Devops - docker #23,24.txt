@@ -1,0 +1,696 @@
+---
+services:
+ mydb:
+  image: mysql:5
+  environment:
+   MYSQL_ROOT_PASSWORD: sunil
+ 
+ mysite:
+  image: wordpress
+  ports:
+   - 5050:80
+  links:
+   - mydb:mysql
+...
+
+
+how to start the yml service 
+# docker-compose up
+
+we got lots of logs coming on the screen. to avoid it we use -d option
+# docker-compose stop
+
+remove container 
+# docker rm -f $(docker ps -aq)
+
+# docker-compose up -d
+
+
+____________________________________________________________
+
+---
+services:
+ mydb:
+  image:mysql:5
+  environment:
+   MYSQL_ROOT_PASSWORD: prdk
+
+apache:
+ image: tomcat
+ ports:
+  - 6060:8080
+ links:
+  - mydb:mysql
+
+php:
+ image: php
+ links:
+  - mydb:mysql
+  - apache:tomcat
+...
+
+-------------------------------
+Understanding Docker Volumes - Devops #23 session 
+------------------------------
+
+1. understanding Docker Volume
+2. Types of Volume
+   1. simple docker volumes 
+   2. docker volume containers 
+Work with docker volume
+
+
+Docker Volumes : 
+
+Docker containers are ephemeral (temporary)
+where as the data procssed by the container should be permenents.
+
+generally , when a container is deleted all its data will be lost.
+To preserv the data , even after deleting the container, we use volumes.
+
+Volume are two types 
+1) Simple docker volume 
+2) docker volume contianer 
+
+Simple docker volumes 
+-------------------------
+
+These volumes are used only when we want to access the data,
+even after the containter is deleted.
+but this data can not be shared with other coantainer.
+
+usecase :
+
+1) create a directory called /data,
+start centos as container and mount /data as volume
+create file in mounted volume in centos container,
+exit from container and delete the container, check if the files are still available
+
+  lets create a folder with the name 
+  # makdir /data
+  # docker run --name c1 -it -v /data centos ( v is for attached volume)
+
+#ls (now , we can see the folder also in the container)
+
+#cd data
+#touch file1 file2
+#ls
+#exit (to come of the container)
+# docker inspect c1
+
+see the mounts path and paste the command 
+/var/lib/docker/volumes/b075b20f91847219e15542ec5fc54718e35f1746196ec091ea3e17b93c3a6529/_data
+
+**What ever data that you created in the volume that will be present permentally
+
+
+2) Docker Volume Container 
+
+These are also known as resuable volume.
+The volume used by one conatiner can be shared with other conatiner.
+Even if all the conatiners are deleted , data will still be available on the docker host.
+
+Ex:
+#sudo su -
+Lets create dicrectory /data
+#mkdir /data
+
+lets start centos as container 
+#docker run --name c1 -it -v /data centos 
+#ls
+
+#cd data
+#ls
+
+Lets create some files
+#touch file1 file2
+
+come-out of he container withoout exit
+#Ctrl +p +Q ( container will still run in background)
+
+Lets start another centos as container (c2 container should use the same volume as c1)
+#docker run --name c2 -it --volume-from c1 centos 
+
+
+
+#cd data
+#ls(we can see the files created by C1 Storage is shared)
+
+Lets create come more files 
+#touch file3 file4
+#ls (we can see 4 files )
+
+comeout of the container wothout exit
+#Ctrl +p Ctrl +q( container will still run in background)
+
+Lets start another centos as container 
+# docker run --name c3 -it --volume-from c2 centos
+
+#cd data
+#ls (we can see 4 files shared)
+#touch file5 file6
+#ls
+
+come out of the conatinaer witout exit
+#Ctrl +p ctrl +q(container will still run in backround)
+
+Now, Lets connect to my continer which is running in the backround 
+#docker attach c1
+#ls
+#exit
+
+Identify the mount location 
+#docker inspect c1(search for the mounts section )
+
+Take note of paths - /var/lib/docker/volumes/42756f89a5db41cb1ed7f281324e16aeb7747fc5464b3e6b2f48d6fee4e810da/_data
+
+Lets remove all the contianer 
+#docker rm -f c1 c2 c3
+
+Lets go to the source path 
+
+/var/lib/docker/volumes/42756f89a5db41cb1ed7f281324e16aeb7747fc5464b3e6b2f48d6fee4e810da/_data
+#ls 
+# file1 file2 file3 file4 file5 file6 (all the files are present in volume image)
+
+
+-------------------------------------------------------------------
+creating customized docker images 
+-------------------------------------------------------------------
+
+whenever docker container is deleted , all the software that we have installed within the container will also deleted.
+
+If we can save contianer as an image , then we can preserv the software.
+This creation of customized docker image can be done in two ways.
+
+1) using docker commit command
+2) using docker files
+
+
+Using Docker commint 
+------------------------------
+
+#docker run --name c1 -it ubuntu 
+
+Update apt repository 
+
+#apt-get update
+#apt-get install git
+
+to check git version
+#git --version
+#exit
+
+To save the container as image (snapshot)
+#docker commit c1 myubuntu
+
+To see the list of image 
+#docker image (you can see the image which you have created )
+
+++++++++++++++++++++++++++++++++++++++++
+Now lets run the image which we have created 
+#docker run --name c2 -it myubuntu
+
+#git --version (git is preinstalled)
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+End #23 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+#24 START
+
+Agenda : 
+1. Creating customized docker image using docker file
+2. understanding keywords of docker file
+3. working with docker file
+4. version controlling on docker 
+5. working with docker registery
+
+####################################
+creating customized docker images
+####################################
+
+Using docker File: 
+
+This is simple text file, which uses predefined keywords for creating customized docker images.
+
+1) FROM -- used to specify the base image from which the docker file has to be created.
+
+2) MAINTAINER -- this represents name of the organization if the author who created this docker file
+3) CMD - specify the initial command that should be executed when container starts.
+4) ENTRYPOINT - used to specify the default process that should be executed when the contianer starts 
+5) RUN - used to running linux command within the container. it is generally helpful for intalling the softweare in the contianer.
+6) USER -- used to specify the default user who should login into the container.
+7) WORKDIR -- used to specify default working directory in the container.
+8) COPY -- copying the files from one host machine to the container.
+9) ADD - used for copying file from host to container , it can aslo be used downloaded fiel from remote server
+10) ENV -- used fro specifying the environment variable that should be passeed to the container.
+11 ) EXPOSE -- used to specify the insternal port of the container.
+12) VOLUME -- used to specify the default volume that should be attached to the continare 
+13) LABEL - used to giving label to the container.
+14) STOPSIGNAL -- used to specify the key sequence that have to be passed in order to stop the container.
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++==
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+Create a dockerfile by taking nginx as the bas image and specify the maintainer as logiclabs. construct an image from the dockerfile.
+
+
+Creating customized docker image by using docker file.
+
+
+#sudo su -
+#vim dockerfile
+
+FROM nginx
+MAINTAINER logiclabs
+
+To build an image from the docker file
+#docker build -t mynginx .
+
+(-t stands fir Tag, . stands for current working dir
+  mynginx is the new image name)
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+When ever i start my container , i want a program to get executed.
+
+#vim dockerfile
+
+FROM centos 
+MAINTAINER logiclabs
+CMD ["date"]
+
+:wq 
+
+To build an image from the dockerfile
+#docker build -t mycentos .
+
+To see the image 
+#docker image ls
+
+Running container from the image
+# docker run -it mycentos 
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+In one docker file , we can have one CMD instruction.
+If we give two commands , it executes the latest one 
+Lets try 
+
+
+#vim dockerfile
+FROM centos 
+MAINTAINER logiclabs
+CMD ["date"]
+CMD ["ls","-la"]
+
+:wq
+
+#docker build -t mycentos .
+#docker run -it mycentos
+(observation , we get ls -la output
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+In ubuntu container , I want to install git in it.
+
+Lets remove te docker file
+#rm dockerfile
+#vim dockerfile
+
+FROM ubuntu 
+MAINTAINER logiclabs
+RUN apt-get update
+RUN apt-get install -y get 
+
+:wq
+
+Note : CMD -- will run when container starts.
+       RUN -- will executed when image is created.
+
+#docker build -t myubuntu .
+
+Lets see the image list and space consumed by our image
+#docker image 
+
+#docker run -it myubuntu 
+#git --version 
+#exit
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Lets perform version controlling in docker file
+
+#mkdir docker
+#mv dockerfile docker
+#cd docker 
+#ls
+
+docker# git init
+docker# git status
+docker# git add . 
+
+docker# git commit -m "a"
+
+(we get error we need to config git)
+docker# git config --global user.name "prdk7226
+docker# git config --global user.email "doke.prdk@gmail.com"
+
+Now , run the above commit command (git commit)
+
+docker# vim dockerfile (lets make some changes add another run command)
+
+FROM ubuntu
+MAINTAINER logiclabs
+RUN apt-get update
+RUN apt-get install -y git
+RUN apt-get install -y default-jdk
+
+:wq
+
+docker# git add .
+docker# git commit -m "b"
+
+Now , I want to have previous version
+#git log --online (to see the list of all the commit)
+
+We want to move to "a" commit (take not of commit id)
+#git reset --hard 7b875a8
+
+Now lets access dockerfile - we can see older verion file 
+#vim dockerfile
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Ex- Create a dockerfile, for using ubuntu as base image , and install java in it.
+download jenkins.war and make executuion of "java -jar jenkins.war" as the default process.
+
+everyday docker image come with default process.
+As long as default process is running , the container will be running condition.
+
+The moment , the default process is closed , the container will be exited.
+
+Lets remove all the container
+
+#docker rm -f $(docker ps -aq)
+
+
+Observation 1:
+When you start ubuntu container , you use below command
+#docker run --name c1 -it ubuntu
+/#
+
+to comeout of the container we use Ctrl +p +q
+
+#docker container ls
+(our container c1 us running in background)
+
+Observation 2:
+When we start jenkins container , we use below command
+#docker run --name j1 -d -P jenkins:2.60.3
+
+Now , I want to open intractive terminal to enter jenkins 
+#docker exec -it j1 bash
+
+(In Ubuntu container , I can directly go into -it terminal, where as in jenkins i am running an addtional command exec???)
+
+Lets try to go to intractive terminal in docker command)
+#docker run --name j2 -it jenkins
+(we are not getting intractive terminal)
+
+I want to run tomcat as container
+#docker run --name t1 -d -P tomcat
+
+(
+
+)
+
+Lets find the reson
+---------------------------------------------------------------------
+docker container ls (to see all the list of cont)
+
+Observ the commad section.
+It tells you default process that gets executed , when we start the container.
+
+Container - every container comes with default process 
+Ubuntu - bin/bash
+Jenkins - /bin/tini -- /usr/l…
+Tomcat - catalina.sh run
+
+bash -- is nothing but the terminal
+
+for linux based container, the default process is shell process
+(ex of shell process are bash shell, bourne shell etc)
+
+Hence we are able to enter -it mode in ubuntu
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+We are trying to change the default process of the container.
+----------------------------------------------------------------
+
+#vim dockerfile
+
+FROM ubuntu
+MAINTAINER logiclabs
+RUN apt-get update
+RUN apt-get install -y default-jdk
+ADD http://mirrors.jenkins.io/war-stable/latest/jenkins.war /
+ENTRYPOINT ["java","-jar","jenkins.war"]
+
+Build an image from the dockerfile
+#docker build -t myubuntu .
+
+To see the list 
+#docker image ls
+
+To start container from new image
+#docker run myubuntu (observ the logs generated on the screen , we got logs related to jenkins , jenkins is full up and running)
+
+Its and ubuntu continaer , it is behaving as a jenkins container)
+
+Ctrl+c
+
+Run the below command 
+
+#docker ps -a
+
+for myubuntu the command is java -jar jenkins.war
+foor ubuntu the command is /bin/bash
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#25
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Agenda : 
+ 
+Container Orchestration 
+   1. Load balancing 
+   2. Scalling of containers
+   3. Perform rolling updates
+   4. Handling failover senerios 
+Remove node from docker swarm
+
+Working on docker registery 
+Registery is the location where docker images are saved.
+
+Types of Registery 
+1. public 
+2. private
+
+public registery is hub.docker.com,
+Images uploaded here are available for everyone.
+
+Usecase : Create a customized ubuntu image , by installing tree in it. Save this container as an image , and upload this image in doker hub.
+
+Step 1 : Create a new account in hub.docker.com
+
+Step 2: Createing our own container 
+#docker run --name c5 -it ubuntu
+
+Lets install tree package in this container 
+/# apt-get update
+/# apt-get install tree
+/# exit
+
+Step 3 : Save the above container as an image
+#docker commit c5 prdk7226/ubuntu_img2
+
+note : Image name should be start with Docker_id/
+
+To see the list of images
+#docker image ls (we can see the new image)
+
+To upload the images to hub.docker.com (docker login command is used)
+--------------------------------------------------------------------
+
+#docker login (provide id and password)
+
+To upload the image
+#docker push <image_name>
+#docker push prdk7226/ubuntu_img2
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#                     #
+Container Orchestration 
+#                     #
+
+This is the process of running docker containers in a distributed environment , on multiple doker host machines.
+All these containers can have a signle servies running on them and they share the resources between eachother, even running on different host machines.
+
+Docker swarm is the tool used for performing container orchestration 
+
+Tool Adventages 
+-------------
+1. Load balancing 
+2. scaling of containers 
+3. performing rolling updates 
+4. handling failover scenarios 
+++++++++++++++++++++++++++++++++++++++
+
+Machine on which docker swarm is installed is call as manager.
+other machines are called as workers.
+
+Lets create 3 machines 
+Name is as manager m worker1, worker2
+
+All the above machines should have docker installed in it.
+install docker using get.docker.com
+
+(optional step to change the prompt)
+after installing docker in the 1st machine (manager) , lets change the host name. host name will be available in the file hostname. We will chanhe the hostname to manager
+
+#vim /etc/hostname
+Manager
+
+:wq
+
+after changing the hostname, lets restart the machine.
+#init 6
+
+++++++++++++++++++++++++++++++++++++++++++++
+Similarly repate , install docker swarm in it.
+
+$ sudo su -
+
+Command to install docker swatm in manager machine 
+
+#docker swarm init --advertise-addr private_of_manager
+# docker swarm init --advertise-addr 172.31.42.227y
+
+Please read the log message
+
+Now, We need to add workers to managers 
+Copy the docker swam join command in the log and run in the worker1 and worker2
+
+Open another gitbash terminal , connect to worker1
+
+sudo su - 
+
+docker swarm join --token SWMTKN-1-6cp86mbxaildozcpqaklbufcr7f3ciiktotlehc7ryljm4kfsd-6gkfm9ibd7zjfsuh8ip5to4kl 172.31.42.227:2377
+
+Repeate for worker2
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+To see the no of nodes from the manager 
+
+Manager #docker node ls (we can see manager , Wokrer1 and worker2)
+
+LOAD BALANCING:
+
+Each docker container is designed to withstand a specific user load.
+When the load increases , we can replica containers in docker swarm and distribute the load.
+
+Ex: Start tomcat in docker swarm with 5 replica and name it as we server 
+
+Manager # docker service create --name we bserver -p 9090:8080 --replicas 5 tomcat
+(5 container with the same service , distrubitued load in 3 machines )
+
+How to see where they are running ?
+Manager # docker serivce ps webserver
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Note: Only one container is running and load is shared to 3 machines 
+
+Lets check
+Public_ip_manager:9090 (will show tomcat page)
+public_ip_worker1:9090 (will show tomcat page)
+public_ip_worker2:9090 (will show tomcat page)
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Handling failover scenarios 
+Ex 2 : start mysql in docker swarm with 3 replicas.
+
+Manager #docker service create --name mydb --replicas 3 -e MYSQL_ROOT_PASSWORD=prdk mysql:5
+
+How to see where they are running ?
+Manager #docker service ps mydb
+
+To know the total no of service running in dokcer swarm
+Manager #docker service ls
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+If you delete a container , it will create another container.
+
+Now , 
+Manager # docker service ps mydb
+
+We can see one container is runnning in manager machine 
+I want to delete the container which is running in manager
+
+Manager #docker conatainer ls
+(we can see 1 mysql container , 1 tomcat container)
+
+Take note of the container_id of mysql
+xxxxxx
+To delete the container
+#docker rm -f xxxxx
+
+Now lets check the mydb service 
+#dockeer service ps mydb (we can see once service is failed , automatically 2nd service is statred )
+At anypoint of time, 3 containers will be runnnig.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+SCANNING of Containers 
+When business reqirnment increases , We should be able to increase the no if replicas.
+Similarly , we should also be able to decrease the replica count based on business requrinment. this scaling should be done without any downtime.
+
+Ex3 : Start nginx with 5 replica, later scale the service to 10
+
+#docker service create --name appserver -p 8080:80 --replicas 5 nginx
+#docker service ps appserver
+
+command to scale 
+#docker service scale appserver=10
+
+To check
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
