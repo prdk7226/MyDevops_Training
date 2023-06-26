@@ -91,8 +91,9 @@ Now, We ned to generate ssh connection
 Enter file in which to save the key (/home/ubuntu/.ssh/id_rsa): mykey
 Enter passphrase (empty for no passphrase): mykey
 Enter same passphrase again: mykey
+new key - 
 
-SHA256:8h0eMV1xoT/p25UKsoDiXmf+tAs32UnKUpixCkJtOI4 ubuntu@ip-172-31-43-90
+SHA256:6glRMZNipWFdXoHFVUvkHQj+YL4/LgHr9dI8gj7vVoQ ubuntu@ip-172-31-43-90
 
 Now copy the key to managed nodes
 
@@ -101,6 +102,42 @@ Now copy the key to managed nodes
 # ssh-copy-id ubuntu@172.31.40.197 (private ip of server2)
 
 # ssh-copy-id ubuntu@172.31.45.64 (private ip of server3)
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Installing ansible now
+
+Connect to controller
+
+$sudo apt-get install software-properties-common
+)software-properties-common, is a base package which is required to install ansible)
+
+$sudo apt-add-repository ppa:ansible/ansible
+$sudo apt-get update
+$sudo apt-get install -y ansible
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+To check the version of ansible 
+$ansible --version
++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Write the id address of nodes in the inventory file
+
+$cd /etc/ansible
+$ls
+$sudo vim hosts
+
+Insert the Private if address of 3 servers 
+save and exit (ESC , :wq)
+
+$ls -la (to see the list in the current machine)
+$ansible all -a 'ls -la' (you will get the list of the files in all managed nodes)
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Completed #26
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+
 
 
 
