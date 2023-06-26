@@ -1,0 +1,116 @@
+Asnible- (Push Based tool)
+Pull based - Chef etc.
+---------------------------------
+
+This is process of configuration remote server from one point of control.
+Playbook - Ansible server written code we called as playbook.
+
+Playbook ke andar multiple books asu shaktat.
+Modules in playbook - pre-define things that we can use it directly.
+
+Adventages:
+------------------------------------
+1) Provisioning of services
+           The application that should be installed on server can be done very quickly from a single centralized location.
+
+2) Disaster recovery 
+            In case of natural disaster , there is a posiblity that a complete data center can be lost. Configuration management tools can capture the info about these servers and store them in simple files called as setup files. these setup files can be useds for re configutation a similer data center at another location.
+
+3) Handling Snowflake servers 
+             In a data center after a period of time , each sever bejhaves like a snow flake server. i.e it can be running on sloghtly ldifferent hardware and software configuration. configuration management tools can capture all this info and store configuration files.
+
+4) Idempotent
+       Configuration management tools are uised to bring the server to a perticular state , called as desired state.If a server already in the desried state , configuration management tools will not reconfigure that server.
+
+Note : Confriguration management tools can not be used for installing OS from the scratch.
+They can be used only for managing the application on top of the os.
+
+Configuration management tools - Ansible  , Chef , Puppet , salt etc
+
+Anisble -- It is a open source configuration management tool , created using Python.
+Remote servers that ansible configure , are called as managed nodes.
+
+Ansible uses agent lesss policy for configuration remote servers ie ansible is installed only on 1 machine , and we do not requires any client side software to be installed on the remote server.
+
+Ansibel performs config mangnt through password less ssh.
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Create 4 server (ubuntu 18)
+1st is controller
+3 are managed nodes 
+
+Name the instance as 
+
+Controller
+Server1
+server2
+server3
+
+Ubuntu machines default come with Python3
+Ansible supports Python2
+We need to downgrade the machines from Python3 to Python2
+
+Connect Server_1
+check the version
+
+# Python3 --version
+
+To donwgrade
+# sudo apt-get update
+# sudo apt-get dist-upgrade (It will point to older repo where python2 is available)
+
+# sudo apt-get install -y python2.7 python-pip
+
+Now check the version of python
+#python2 --version
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Establish password less connection 
+
+# sudo passwd ubuntu
+(let give the password as ubuntu only)
+
+# sudo vim /etc/ssh/sshd_config
+
+change
+PasswordAuthentication yes
+save and QUIT
+
+# sudo service ssh restart
+# exit
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Repeate the same steps in server2 and server3 and controller
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Now, We ned to generate ssh connection 
+
+#ssh-keygen
+
+Enter file in which to save the key (/home/ubuntu/.ssh/id_rsa): mykey
+Enter passphrase (empty for no passphrase): mykey
+Enter same passphrase again: mykey
+
+SHA256:8h0eMV1xoT/p25UKsoDiXmf+tAs32UnKUpixCkJtOI4 ubuntu@ip-172-31-43-90
+
+Now copy the key to managed nodes
+
+# ssh-copy-id ubuntu@172.31.43.102 (private ip of server1)
+
+# ssh-copy-id ubuntu@172.31.40.197 (private ip of server2)
+
+# ssh-copy-id ubuntu@172.31.45.64 (private ip of server3)
+
+
+
+
+
+
+
+
+
+
+
+
+
