@@ -1,3 +1,81 @@
 **************************
 https://www.youtube.com/watch?v=Z_bbozP6ZW4
-***************************
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Chanel name - https://www.youtube.com/@DeekshithSN
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+1. what braching startegy you have used in the project?
+->>> we had Master ,dev , fetatue , release , hotfix baranch
+2. build life cycle of maven?
+-->> clean , build , sight( generate site doc , phase 4)
+3. I dont want to use .m2 directory file so what will be the solution for this ??
+-->> we have 2 options :
+     1. can modify setting.xml file where in we will need to modify local repo tag
+     2. mvn install -d local.repo command
+4. MVN deployee???
+we need to define in project's pom.xml files ,in distrubution management section we need to define id name url of the repo
+where we are deploying artifacts to, also we need to define authencation info in setting.xml.
+5. what GAV's ??
+-->> GAV stands for groupid:artifactid:version & GAV is used minimal coordinate attributes for Maven
+6.what is the default value of packing tag???
+-->> .jar is the default value of packing tag also have other values like pom,war,tar,jar
+7. what jenkins jobtype??
+-->> freestyle peroject , multibrach pipeline
+8. lets say a developer take code outof master branch and create feature branch and erases a PR to get it back to master...so i want to create job for that ??
+
+we can use multi-branch pipeline job for PR job.
+
+9. once the code changes is done temporary branch will get deleted how this will done in your project???
+-->  we can enable git hub option to delete perticular branch after merge is done.
+10. post block in pipline,?? why that is used for ? what is importantce ?is it mandetory ??
+--> since post section of the pipeline run at the end of pipeline exection we can perform several task like finilization ,cleaning up, notification so we have some test condition that we can used in the post block of jenkins , alwasys , unstable ,aborated - depending on condition like 'always - regardless of completion of test it will always run.
+similary if completion status is unstable then ionly it will run the step in the post block condition.
+
+11.how we can take backup ??
+--> usually all the settings , artifacts archieve building logs are stored under on jenkins home directory , so just take backup of jenkins home directory.
+also we have jenkins backup plugin that we can use it.
+
+12. docker ? which version checked ???
+docker composee -  docker swarm 
+--> they both are meant to deal with the multi continaer application 
+docker composee - is the tool to define multicaontainer application and adventage of using it that we can define application stack in sigle file which we can keep it at the root of our project repo so anyone else wants to contribute to project they can just clone the repo and start the compose application. with this docker compose defination file the signle command we can cleanup everything
+
+docker swarm - it is same as kubernatics its called as contrinaer orchestration tool or which allows us to manage multiple containers deployed accross multiple containers host machine. It allows us to perform scalling , networking , maintaining containirized applcations , difference here is a docker swam is used to scale application accross one more servers but docker compose only limited to one host to run at time.
+
+13. Docker Volume and mounting ????
+--> when we use volume command it will actually create new folder in the host systyem so when that perticular container crahses we can attach that same volume to other containers.
+We use buying mounts to binds an existing folder in the host system to a path in the container so when we link dev folders to a path the container any change in the host folder will reflect in container  so we dont have to re-deploy again and again.
+
+14. what is docker ignore file???
+--> we can specifiy files and folders to execute from final build image so when we oo docker build it is nessassary to prevent files from being added to build context so it avoids unnessassory sending large and sensetive file to image bin
+
+15. can we name docker file withoiut docker name in it??
+-->> yes we can give anyfile name to the file but its best pratice to give default name as it is easier when you build command , we can just specify dot to refer docker file in that location , so if we name our docker file with any other name we should specify using -f when building image
+
+16. I need to delete all the stop containers unused , how will i do it??any short command ??
+--> docker system prune - (delete all stoped containers and unused images)
+
+17. have you worked on kubernatics ???
+if not just say - we have started implemenating it in our project now.
+Question - you are like consuming or administrative kubernetics 
+--> notactully administratering , we do deploy applcation 
+
+18.when you create any POD so lets say when you cretae any deployinment so all the POD's or anyhthing so it will go/transfer to other machine like working nodes (think about one master and multi node , so all the POD's are delpoye on to different machines but not yet to master.....what it is not deploy to master ????
+can we deploy on master POD ?????
+
+--->>> yes we have a way but best pratice to not to deployee application workloads dircetly to master server. when kubernatics culster first setup we can notice paint is set on master node so we can run to CPL describe node and you just look for our paint section , it would be set to not schedule any POD on master, but we can schedule POD's on master by applying Tolertation to POD's with not contains.
+
+19. have you come accross config maps while working on projects ???
+
+--> config map is on object is used to store data in key value pair (not sensetive data) so we can seperate environment specific configurtion from application code using config map.like when we want to change the configuration for ex with respect to environment variable we can simply change it in config map file.the we are good to go , we dont have to change in every location where data is referenced in application
+
+20. pre-requesit at the time of kubernatics deployment ?? like machinism to make sure few parts up and running. What is default  deployment strategy??????
+
+--->>  rolling updates strategy is default deployment 
+two types of deployment strategry 1. recreate 2. rolling updates 
+Rolling updates - application never goes down, we will not destroy all the 
+instance at once, we will actully take down older version and bring up a newer version  
+
+
+
+
+**** ***********************
