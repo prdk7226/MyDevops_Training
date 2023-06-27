@@ -27,4 +27,101 @@ Important modules in ansible
 18. docker_image - used to execute command related to docker images on managed nodes.
 19. docker_login - used to login to docker hub from managed nodes.
 20. setup - used to capturing system info related to managed nodes.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Default module is "command" module
+
+$ ansible all -i /etc/ansible/host -m command -a 'free'
+Every command start with ansible
+
+Break down above command 
+
+ansible - software 
+all - all the nodes
+-i  - inventories 
+/etc/ansible/host - link of invenstory file
+-m - module (which module i am using)
+command - basic command module
+-a - arguemtn 
+free - which shows you how much mem avaiable.
+
+$ ansible all -i /etc/ansible/host -m command -a 'touch file1' 
+
+To check the file which is created 
+$ssh private-ip of nodes(this command will go to that machine)
+$ls 
+$exit (to come back to controller)
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+To install docker in all managed nodes
+
+$ansible all -i /etc/ansible/hosts -m shell -a 'curl -fsSL https://get.docker.com -o get-docker.sh
+
+$ ansible all -i /etc/ansible/hosts -m shell -a 'sh get-docker.sh'
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+To check socker is installed or not
+$ssh private_id of node
+$docker --version
+$exit
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Notes:
+
+Ansible perform remote configuration in 2 ways 
+1. using adhoc command
+2. using play book
+
+Syntax of adhoc commands
+$ansible all/group_name/ipaddress -i path_of_inventory_files -m modulename -a 'argument'
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+To open the default inventory file
+
+$sudo vim /etc/ansible/hosts
+(obsrvation : 3 ip address (node) are present)
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Now, i copy the first two IP address (in a new notepad file)
+Quite the invenrtoy file
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Create my own inventory file 
+$vim myinventory
+go to insert mode
+
+paste two ip address
+save and quite
+$cat myinventory
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+$ansible all -u myinventory -m command -a 'free'
+Observation : free command works on only two machines 
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+If you do not mention the inventory file, it the default inventory files.
+Ex- 
+$ansible all -m command -a 'free'
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+command module is th default module in ansible
+$ansible all -a 'free'
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Note : 
+The default inventory file is /etc/ansible/hosts and when using this invetory file , we need not use -i option.
+ex
+$ansible all -m command -a 'free'
+
+The default module is module . when using command module we need not use -m option 
+ex:
+$anisble all -a 'free'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
