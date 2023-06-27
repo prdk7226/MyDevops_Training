@@ -26,5 +26,5 @@ Important modules in ansible
 17. docker_container - used to execute docker command related to container management on managed nodes.
 18. docker_image - used to execute command related to docker images on managed nodes.
 19. docker_login - used to login to docker hub from managed nodes.
-setup - used to capturing system info related to managed nodes.
+20. setup - used to capturing system info related to managed nodes.
 
