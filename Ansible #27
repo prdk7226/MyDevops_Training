@@ -108,6 +108,80 @@ The default module is module . when using command module we need not use -m opti
 ex:
 $anisble all -a 'free'
 
+shell Module
+-----------------------------------------
+Ansible command to execute ls -la and stores output into file1 on all the managed nodes.
+
+$ansible all -m shell -a 'ls -la > file1'
+
+To check the file which is created 
+
+$ssh private_ip
+$ls
+$exit
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+command to isntall docker on all managed nodes 
+
+$ansible all -i /etc/ansible/hosts -m shell -a 'curl -fsSL https://get.docker.com -o get-docker.sh
+
+$ ansible all -i /etc/ansible/hosts -m shell -a 'sh get-docker.sh'
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+user module :
+(from controller)
+To create new user
+
+$sudo useradd sai
+vim /etc/passwd (user will be create in this file)
+To set the pwd
+$sudo passwd sai (sai is the pwd)
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Now, i want to create user in all managed nodes 
+$anisble all -m user -a 'name=anu password=intelliq'
+(we get error : permission denied)
+
+$anisble all -m user -a 'name=anu password=intelliq' -b (become . for higher privilages on managed nodes)
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+To cjeck if user is created or not
+$ssh private_ip
+$vim /etc/passwd
+$exit
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+command to create user and set home dicrecotry ,user id , default wotking shell etc
+another example :
+$ansible all -m user -a 'name=ravi password=freefree uid=1234 comment='A' regular user"
+home=/home/ubuntu/ravi shell=/bin/bash -b
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+Install git in all managed nodes 
+---------------------------------------
+$anisble all -m apt -a 'name=git state=prenent' -b
+
+observation : 
+We get "changes ":false
+(That means git is already installe on it. the command has no effect in the nodes )
+
+Now, run the below command
+
+$ansible all -m apt -a 'name=git state=absent' -b(absent means = uninstall)
+output , we get in yellow color
+(scroll up) we get "changed:true")
+(the command is effected the instance)
+
+Now if we run the below command (with present option)
+$ansible all -m apt -a 'name=git state=present' -b
+
+we get "changed":true 
+Notes:
+apt module - this is used for package management.
+1) anisble all -m apt -a 'name=git state=present' -b
+
+state=present is ofr installation
+state=latest for upgradation 
+state= absent for uninstallation
+
+
+
+
+
 
 
 
