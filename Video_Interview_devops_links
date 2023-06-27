@@ -74,6 +74,41 @@ can we deploy on master POD ?????
 two types of deployment strategry 1. recreate 2. rolling updates 
 Rolling updates - application never goes down, we will not destroy all the 
 instance at once, we will actully take down older version and bring up a newer version  
+Re-create - this case we will distory all the instance and create newer version so in this case application will be down and inaccessable to use.
+
+21. have you used helm ? what is it ? why we use it?
+--> Helm is basically a package manager for kubernatics , it will actually ease the deployment or complexicity with kubrnetes, which involves writting many interdependents humanities resources such as deployment services , secreates ,config map etc., so it enables to deploy application easily with single helm install command instead of creating every resource seperately which will also improve developer productivity.
+
+22. Helm Req: I have defined many values like in my list i have defined many tags but i am not using in my templates so is there any way by which we can see which is not unsued tags , unused yaml tags ??is there any way or we have to write shell scripting for that. 
+---> yeah we can write scritp but one option is using helm command - helm linked --detect unused values option
+
+23. what is exit status ???
+---> just know weather command is executed properly we used it,like successful command it return 0 and unsuccessfull it retruns non zero value. $? will be used to check status.
+
+24. i have just giving some machine it can be ubuntu, centos , so how to identify which O.S it is ????
+
+--> we can execute uname -a / -e
+
+25. can we execute any play book depending upon whcih O.S???
+if i want to execute some taks on ubuntu , some on centos then?????
+
+--> we can memtion host in inventory file and we can execute it.
+
+26. what is ansible galaxy????
+
+--> it is public repo for ansible rules from where we can use them in our playbook , so its free site finding , downloading ,sharing rules which we can use for certain tasks infra, deploying application that task we do every day.
+
+27. adhoc command ? how you used it??? example of it???
+---> these are just one liner command when we have taks that we don't repeate on daily b asis which we picked very rearlly and they are best very quick and easy,but they can't be reused so common example - when we want to power off several machines for several days we can execute one liner command to perform that command without writting a playbook. 
+
+28. if you executed command module then can we store that output??
+
+29. have you used handlers in ansible??
+--> it is a regular task in playbook but it only run if taks contain notify directive and indicates that it changed something for ex - if config file is changed then tasks referencing that config file may notify service restart handlers so handlers will perform an action when it listen for notify event.
+
+30. AWS 
+
+
 
 
 
