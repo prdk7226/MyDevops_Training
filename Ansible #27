@@ -177,6 +177,12 @@ apt module - this is used for package management.
 state=present is ofr installation
 state=latest for upgradation 
 state= absent for uninstallation
++++++++++++++++++++++++++++++++++++++++++++++++++
+I wan to update apt-repositoty and install tomcats
+
+$ansible all- apt a name tomcat8 state=present update_cache=yes' -b
+
+above command will update apt repository and install tomcats To update apt-repository on managed nodes update_cacheayes is used
 
 
 
