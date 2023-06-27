@@ -1,0 +1,17 @@
+File module
+This is used to create files and folder on managed nodes
+ansible all-m file -a 'name=/tmp/file1 state-touch'
+To check the file which is create
+$ ssh 172.31.11.96
+$ cd /tmp
+$ 1s
+$ exit
+TO create a directory
+ansible all-m file -a 'name=/tmp/dir1 state=directory
+To check the directory
+$ ssh 172.31.11.96
+$ cd /tmp
+$1s
+$ exit
+To delete the file
+ansible all-m file -a 'name=/tmp/filel state=absent'
