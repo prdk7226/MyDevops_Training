@@ -6,4 +6,25 @@ Ansible #27 Session
 
 Adhoc Commands 
 ------------------------------------------------
+Important modules in ansible
+1. command - this module is used for executing basic linux command on managed nodes.
+2. shell -This modile is used to execute command which involved redirection and piping and to execute shell scripts on managed nodes.
+3. ping - This module is used to check if the remote server is pingable or not.
+4. user -- this module is used for user management like create user ,setting, pwd,assign home directory etc.
+5. copy - this modiule is used to copy the files and folders from controller to managed nodes.
+6. fetch - this module is used to copy files and folders from controller to managed nodes.
+7. file - this is used for creating or deleting files and folder present in managed nodes.
+8. stat - used to capture details information about files and folders present in managed nodes.
+9. debug - used to display output module
+10. apt - used for performing package on managed nodes i.e installing software/upgrading repo etc . It works on ubuntu , debian falvours of linux.
+11. yum - similer to apt module. it works on redhat linux, centos etc.
+12. git - used to perform git version controlling on managed nodes.
+13. replace - used to replace specific text in configuration file with some other text.
+14. service - used for starting /stopping /restarting services on manged nodes.
+15. include - used for calling child play book from parent play book.
+16. uri - usedfull in checking if reomte url is reachable or not.
+17. docker_container - used to execute docker command related to container management on managed nodes.
+18. docker_image - used to execute command related to docker images on managed nodes.
+19. docker_login - used to login to docker hub from managed nodes.
+setup - used to capturing system info related to managed nodes.
 
